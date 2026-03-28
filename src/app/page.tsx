@@ -1,6 +1,107 @@
 "use client";
 import { useEffect, useState } from "react";
 
+/* ── Pixel Art Avatars (CSS box-shadow technique) ── */
+// Each pixel is 4px. Grid is 12x12. Colors defined per agent.
+const P = 4; // pixel size
+
+function pixelShadow(pixels: [number, number, string][]): string {
+  return pixels.map(([x, y, c]) => `${x * P}px ${y * P}px 0 ${c}`).join(",");
+}
+
+// AIShintani - 🧠 Brain/CEO - green/emerald tones
+const shintaniPixels: [number, number, string][] = [
+  // Hair
+  [4,0,"#1a1a2e"],[5,0,"#1a1a2e"],[6,0,"#1a1a2e"],[7,0,"#1a1a2e"],
+  [3,1,"#1a1a2e"],[4,1,"#1a1a2e"],[5,1,"#1a1a2e"],[6,1,"#1a1a2e"],[7,1,"#1a1a2e"],[8,1,"#1a1a2e"],
+  // Face
+  [4,2,"#f0c8a0"],[5,2,"#f0c8a0"],[6,2,"#f0c8a0"],[7,2,"#f0c8a0"],
+  [3,3,"#f0c8a0"],[4,3,"#f0c8a0"],[5,3,"#2d2d2d"],[6,3,"#f0c8a0"],[7,3,"#2d2d2d"],[8,3,"#f0c8a0"],
+  [3,4,"#f0c8a0"],[4,4,"#f0c8a0"],[5,4,"#f0c8a0"],[6,4,"#f0c8a0"],[7,4,"#f0c8a0"],[8,4,"#f0c8a0"],
+  [4,5,"#f0c8a0"],[5,5,"#d4856a"],[6,5,"#d4856a"],[7,5,"#f0c8a0"],
+  // Body (suit + emerald tie)
+  [3,6,"#10b981"],[4,6,"#10b981"],[5,6,"#059669"],[6,6,"#059669"],[7,6,"#10b981"],[8,6,"#10b981"],
+  [2,7,"#10b981"],[3,7,"#10b981"],[4,7,"#10b981"],[5,7,"#047857"],[6,7,"#047857"],[7,7,"#10b981"],[8,7,"#10b981"],[9,7,"#10b981"],
+  [2,8,"#10b981"],[3,8,"#10b981"],[4,8,"#10b981"],[5,8,"#10b981"],[6,8,"#10b981"],[7,8,"#10b981"],[8,8,"#10b981"],[9,8,"#10b981"],
+  // Legs
+  [4,9,"#1a1a2e"],[5,9,"#1a1a2e"],[6,9,"#1a1a2e"],[7,9,"#1a1a2e"],
+  [4,10,"#1a1a2e"],[5,10,"#1a1a2e"],[6,10,"#1a1a2e"],[7,10,"#1a1a2e"],
+];
+
+// Dev - 👨‍💻 Coder - blue/indigo tones, headphones
+const devPixels: [number, number, string][] = [
+  [4,0,"#312e81"],[5,0,"#312e81"],[6,0,"#312e81"],[7,0,"#312e81"],
+  [3,1,"#312e81"],[4,1,"#312e81"],[5,1,"#312e81"],[6,1,"#312e81"],[7,1,"#312e81"],[8,1,"#312e81"],
+  [2,2,"#6366f1"],[4,2,"#f0c8a0"],[5,2,"#f0c8a0"],[6,2,"#f0c8a0"],[7,2,"#f0c8a0"],[9,2,"#6366f1"],
+  [2,3,"#6366f1"],[3,3,"#f0c8a0"],[4,3,"#f0c8a0"],[5,3,"#3b82f6"],[6,3,"#f0c8a0"],[7,3,"#3b82f6"],[8,3,"#f0c8a0"],[9,3,"#6366f1"],
+  [3,4,"#f0c8a0"],[4,4,"#f0c8a0"],[5,4,"#f0c8a0"],[6,4,"#f0c8a0"],[7,4,"#f0c8a0"],[8,4,"#f0c8a0"],
+  [4,5,"#f0c8a0"],[5,5,"#d4856a"],[6,5,"#d4856a"],[7,5,"#f0c8a0"],
+  [3,6,"#3b82f6"],[4,6,"#3b82f6"],[5,6,"#1d4ed8"],[6,6,"#1d4ed8"],[7,6,"#3b82f6"],[8,6,"#3b82f6"],
+  [2,7,"#3b82f6"],[3,7,"#3b82f6"],[4,7,"#3b82f6"],[5,7,"#1e40af"],[6,7,"#1e40af"],[7,7,"#3b82f6"],[8,7,"#3b82f6"],[9,7,"#3b82f6"],
+  [2,8,"#3b82f6"],[3,8,"#3b82f6"],[4,8,"#3b82f6"],[5,8,"#3b82f6"],[6,8,"#3b82f6"],[7,8,"#3b82f6"],[8,8,"#3b82f6"],[9,8,"#3b82f6"],
+  [4,9,"#1e293b"],[5,9,"#1e293b"],[6,9,"#1e293b"],[7,9,"#1e293b"],
+  [4,10,"#1e293b"],[5,10,"#1e293b"],[6,10,"#1e293b"],[7,10,"#1e293b"],
+];
+
+// Ops - 📋 Operations - amber/orange tones, clipboard
+const opsPixels: [number, number, string][] = [
+  [4,0,"#78350f"],[5,0,"#78350f"],[6,0,"#78350f"],[7,0,"#78350f"],
+  [3,1,"#78350f"],[4,1,"#78350f"],[5,1,"#78350f"],[6,1,"#78350f"],[7,1,"#78350f"],[8,1,"#78350f"],
+  [4,2,"#f0c8a0"],[5,2,"#f0c8a0"],[6,2,"#f0c8a0"],[7,2,"#f0c8a0"],
+  [3,3,"#f0c8a0"],[4,3,"#f0c8a0"],[5,3,"#92400e"],[6,3,"#f0c8a0"],[7,3,"#92400e"],[8,3,"#f0c8a0"],
+  [3,4,"#f0c8a0"],[4,4,"#f0c8a0"],[5,4,"#f0c8a0"],[6,4,"#f0c8a0"],[7,4,"#f0c8a0"],[8,4,"#f0c8a0"],
+  [4,5,"#f0c8a0"],[5,5,"#d4856a"],[6,5,"#d4856a"],[7,5,"#f0c8a0"],
+  [3,6,"#f59e0b"],[4,6,"#f59e0b"],[5,6,"#d97706"],[6,6,"#d97706"],[7,6,"#f59e0b"],[8,6,"#f59e0b"],
+  [2,7,"#f59e0b"],[3,7,"#f59e0b"],[4,7,"#f59e0b"],[5,7,"#b45309"],[6,7,"#b45309"],[7,7,"#f59e0b"],[8,7,"#f59e0b"],[9,7,"#f59e0b"],
+  [2,8,"#f59e0b"],[3,8,"#f59e0b"],[4,8,"#f59e0b"],[5,8,"#f59e0b"],[6,8,"#f59e0b"],[7,8,"#f59e0b"],[8,8,"#f59e0b"],[9,8,"#f59e0b"],
+  [4,9,"#292524"],[5,9,"#292524"],[6,9,"#292524"],[7,9,"#292524"],
+  [4,10,"#292524"],[5,10,"#292524"],[6,10,"#292524"],[7,10,"#292524"],
+];
+
+// Research - 🔬 Researcher - purple/violet, lab coat
+const researchPixels: [number, number, string][] = [
+  [4,0,"#581c87"],[5,0,"#581c87"],[6,0,"#581c87"],[7,0,"#581c87"],
+  [3,1,"#581c87"],[4,1,"#581c87"],[5,1,"#581c87"],[6,1,"#581c87"],[7,1,"#581c87"],[8,1,"#581c87"],
+  [4,2,"#f0c8a0"],[5,2,"#f0c8a0"],[6,2,"#f0c8a0"],[7,2,"#f0c8a0"],
+  [3,3,"#f0c8a0"],[4,3,"#f0c8a0"],[5,3,"#7c3aed"],[6,3,"#f0c8a0"],[7,3,"#7c3aed"],[8,3,"#f0c8a0"],
+  [3,4,"#f0c8a0"],[4,4,"#f5f5f5"],[5,4,"#f0c8a0"],[6,4,"#f0c8a0"],[7,4,"#f5f5f5"],[8,4,"#f0c8a0"],
+  [4,5,"#f0c8a0"],[5,5,"#d4856a"],[6,5,"#d4856a"],[7,5,"#f0c8a0"],
+  [3,6,"#f5f5f5"],[4,6,"#f5f5f5"],[5,6,"#a855f7"],[6,6,"#a855f7"],[7,6,"#f5f5f5"],[8,6,"#f5f5f5"],
+  [2,7,"#f5f5f5"],[3,7,"#f5f5f5"],[4,7,"#f5f5f5"],[5,7,"#9333ea"],[6,7,"#9333ea"],[7,7,"#f5f5f5"],[8,7,"#f5f5f5"],[9,7,"#f5f5f5"],
+  [2,8,"#f5f5f5"],[3,8,"#f5f5f5"],[4,8,"#f5f5f5"],[5,8,"#f5f5f5"],[6,8,"#f5f5f5"],[7,8,"#f5f5f5"],[8,8,"#f5f5f5"],[9,8,"#f5f5f5"],
+  [4,9,"#374151"],[5,9,"#374151"],[6,9,"#374151"],[7,9,"#374151"],
+  [4,10,"#374151"],[5,10,"#374151"],[6,10,"#374151"],[7,10,"#374151"],
+];
+
+const agentPixelData: Record<string, [number, number, string][]> = {
+  AIShintani: shintaniPixels,
+  Dev: devPixels,
+  Ops: opsPixels,
+  Research: researchPixels,
+};
+
+const PixelAvatar = ({ name, size = 48 }: { name: string; size?: number }) => {
+  const pixels = agentPixelData[name] || shintaniPixels;
+  const scale = size / (12 * P);
+  return (
+    <div className="pixel-avatar" style={{ width: size, height: size, position: "relative", overflow: "hidden" }}>
+      <div
+        style={{
+          width: P,
+          height: P,
+          boxShadow: pixelShadow(pixels),
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          imageRendering: "pixelated",
+        }}
+      />
+    </div>
+  );
+};
+
 /* ── UI Components ── */
 const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div className={`bg-gray-800/50 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:scale-[1.01] transition-transform ${className}`}>
@@ -23,10 +124,10 @@ const StatusBadge = ({ status, color = "emerald" }: { status: string; color?: st
 
 /* ── Data ── */
 const agents = [
-  { emoji: "🧠", name: "AIShintani", role: "CEO / メインエージェント", status: "稼働中", color: "emerald", desc: "BMS特化。タスク管理・クライアント対応・全体統括" },
-  { emoji: "👨‍💻", name: "Dev", role: "開発エージェント", status: "待機中", color: "blue", desc: "コード実装・テスト・デプロイ" },
-  { emoji: "📋", name: "Ops", role: "運用エージェント", status: "待機中", color: "blue", desc: "運用管理・タスク管理・進捗追跡" },
-  { emoji: "🔬", name: "Research", role: "調査エージェント", status: "待機中", color: "blue", desc: "技術調査・市場調査・情報収集" },
+  { name: "AIShintani", role: "CEO / メインエージェント", status: "稼働中", color: "emerald", desc: "BMS特化。タスク管理・クライアント対応・全体統括" },
+  { name: "Dev", role: "開発エージェント", status: "待機中", color: "blue", desc: "コード実装・テスト・デプロイ" },
+  { name: "Ops", role: "運用エージェント", status: "待機中", color: "blue", desc: "運用管理・タスク管理・進捗追跡" },
+  { name: "Research", role: "調査エージェント", status: "待機中", color: "blue", desc: "技術調査・市場調査・情報収集" },
 ];
 
 const tools = [
@@ -119,8 +220,8 @@ export default function Home() {
     <main className="min-h-screen p-4 sm:p-8 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <Card className="flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border-2 border-emerald-500/30 flex items-center justify-center text-6xl shrink-0 shadow-lg shadow-emerald-500/10">
-          🧠
+        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border-2 border-emerald-500/30 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/10 overflow-hidden pixel-breathe">
+          <PixelAvatar name="AIShintani" size={88} />
         </div>
         <div className="text-center sm:text-left flex-1">
           <h1 className="text-3xl font-bold tracking-tight">AIShintani</h1>
@@ -162,7 +263,9 @@ export default function Home() {
           {agents.map((a) => (
             <div key={a.name} className="bg-gray-900/50 border border-gray-700/30 rounded-xl p-4 hover:border-gray-600/50 transition-colors">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center text-2xl">{a.emoji}</div>
+                <div className="w-12 h-12 rounded-lg bg-gray-700/30 flex items-center justify-center overflow-hidden pixel-breathe">
+                  <PixelAvatar name={a.name} size={48} />
+                </div>
                 <div>
                   <p className="font-semibold text-sm">{a.name}</p>
                   <p className="text-xs text-gray-500">{a.role}</p>

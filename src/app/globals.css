@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+/* Pixel avatar breathe animation */
+@keyframes pixel-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes pixel-idle {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0.7; }
+}
+
+.pixel-breathe {
+  animation: pixel-breathe 3s ease-in-out infinite;
+}
+
+.pixel-breathe:hover {
+  animation: pixel-breathe 1.5s ease-in-out infinite;
+}
+
+/* Pixel art rendering */
+.pixel-avatar * {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
